@@ -3,52 +3,62 @@ package main
 import (
 	"html/template"
 	"path/filepath"
+	"time"
 
 	"github.com/ashab-k/snippetbox/pkg/models"
 )
 
 type templateData struct {
+	CurrentYear int
 	Snippet *models.Snippet
 	Snippets []*models.Snippet
 }
 
-func newTemplateCache(dir string) (map[string]*template.Template , error){
-	cache := map[string]*template.Template{}
+func humanDate(t time.Time) string {
+	// Return the empty string if time has the zero value.
+	if t.IsZero() {
+		return ""
+	}
 
-	pages, err := filepath.Glob(filepath.Join(dir, "*.page.tmpl"))
+	// Convert the time to UTC before formatting it.
+	return t.UTC().Format("02 Jan 2006 at 15:04")
+}
+
+// initialise a template.FuncMap object to store a lookup reference
+// to all our self created template functions
+var functions = template.FuncMap{
+	"humanDate": humanDate,
+}
+
+
+func newTemplateCache(dir string) (map[string]*template.Template, error) {
+    cache := map[string]*template.Template{}
+
+    pages, err := filepath.Glob(filepath.Join(dir, "*.page.tmpl"))
     if err != nil {
         return nil, err
     }
 
-    // Loop through the pages one-by-one.
     for _, page := range pages {
-        // Extract the file name (like 'home.page.tmpl') from the full file path
-        // and assign it to the name variable.
         name := filepath.Base(page)
 
-        // Parse the page template file in to a template set.
-        ts, err := template.ParseFiles(page)
+        ts, err := template.New(name).Funcs(functions).ParseFiles(page)
         if err != nil {
             return nil, err
         }
 
-        // Use the ParseGlob method to add any 'layout' templates to the
-        // template set (in our case, it's just the 'base' layout at the
-        // moment).
         ts, err = ts.ParseGlob(filepath.Join(dir, "*.layout.tmpl"))
         if err != nil {
             return nil, err
-        } 
-		ts, err = ts.ParseGlob(filepath.Join(dir, "*.partial.tmpl"))
+        }
+
+        ts, err = ts.ParseGlob(filepath.Join(dir, "*.partial.tmpl"))
         if err != nil {
             return nil, err
         }
 
-        // Add the template set to the cache, using the name of the page
-        // (like 'home.page.tmpl') as the key.
         cache[name] = ts
     }
 
-    // Return the map.
     return cache, nil
 }
