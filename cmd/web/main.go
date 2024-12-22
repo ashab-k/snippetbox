@@ -7,6 +7,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
+
+	"github.com/golangcollege/sessions"
 
 	"github.com/ashab-k/snippetbox/pkg/models/mysql"
 
@@ -16,6 +19,7 @@ import (
 type application  struct{
 	errLog *log.Logger
 	infoLog *log.Logger
+	session *sessions.Session
 	snippets *mysql.SnippetModel
 	templateCache map[string]*template.Template
 }
@@ -31,6 +35,8 @@ func main() {
 
 	errLog := log.New(os.Stderr , "ERROR\t" , log.Ldate|log.Ltime|log.Llongfile)
 
+	secret := flag.String("secret", "s6Ndh+pPbnzHbS*+9Pk8qGWhTzbpa@ge", "Secret key")
+    flag.Parse()
 
 	db , err := openDB(*dsn)
 	
@@ -44,9 +50,15 @@ func main() {
 	if err != nil {
 		errLog.Panic(err)
 	}
+
+	session := sessions.New([]byte(*secret))
+	session.Lifetime = 12 * time.Hour
+
+
 	app := &application{
 		errLog: errLog,
 		infoLog: infoLog,
+		session: session,
 		snippets: &mysql.SnippetModel{DB: db},
 		templateCache: templateCache ,
 	}
@@ -61,7 +73,7 @@ func main() {
 		ErrorLog: errLog,
 		Handler: app.routes(),
 	}
-    err = srv.ListenAndServe()
+    err = srv.ListenAndServeTLS("./tls/cert.pem" , "./tls/key.pem")
     errLog.Fatal(err)
 }
 
