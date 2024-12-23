@@ -12,6 +12,7 @@ import (
 
 	"github.com/golangcollege/sessions"
 
+	"github.com/ashab-k/snippetbox/pkg/models"
 	"github.com/ashab-k/snippetbox/pkg/models/mysql"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -19,15 +20,22 @@ import (
 type contextKey string
 
 var contextKeyUser = contextKey("user")
-type application  struct{
-	errLog *log.Logger
-	infoLog *log.Logger
-	session *sessions.Session
-	snippets *mysql.SnippetModel
-	templateCache map[string]*template.Template
-	users *mysql.UserModel
+type application struct {
+    errLog *log.Logger
+    infoLog  *log.Logger
+    session  *sessions.Session
+    snippets interface {
+        Insert(string, string, string) (int, error)
+        Get(int) (*models.Snippet, error)
+        Latest() ([]*models.Snippet, error)
+    }
+    templateCache map[string]*template.Template
+    users         interface {
+        Insert(string, string, string) error
+        Authenticate(string, string) (int, error)
+        Get(int) (*models.User, error)
+    }
 }
-
 func main() {
 
 
