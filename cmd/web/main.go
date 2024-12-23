@@ -16,7 +16,9 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 )
+type contextKey string
 
+var contextKeyUser = contextKey("user")
 type application  struct{
 	errLog *log.Logger
 	infoLog *log.Logger
