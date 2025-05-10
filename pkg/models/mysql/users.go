@@ -47,7 +47,7 @@ func (m *UserModel) Insert(name, email, password string) error {
 func (m *UserModel) Authenticate(email, password string) (int, error) {
 	var id int
 	var hashedPassword []byte
-	row := m.DB.QueryRow("SELECT id , hashed_password from USERS WHERE email = ?" ,email)
+	row := m.DB.QueryRow("SELECT id , hashed_password from users WHERE email = ?" ,email)
 
 	err := row.Scan(&id , &hashedPassword)
 	if err == sql.ErrNoRows{

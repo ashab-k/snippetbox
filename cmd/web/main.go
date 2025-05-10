@@ -1,7 +1,7 @@
 package main
 
 import (
-	"crypto/tls"
+	//"crypto/tls"
 	"database/sql"
 	"flag"
 	"html/template"
@@ -40,8 +40,11 @@ func main() {
 
 
 	addr := flag.String("addr" ,":4000" , "HTTP network port") 
-	dsn := flag.String("dsn" , "web:anas0707@/snippetbox?parseTime=true" , "MySQL datasource name")
-	 
+	dsn := flag.String("dsn", os.Getenv("DB_DSN"), "MySQL datasource name")
+	if *dsn == "" {
+		log.Fatal("DB_DSN must be set")
+	}
+
 	flag.Parse()
 	infoLog := log.New(os.Stdout , "INFO\t" , log.Ldate | log.Ltime)
 
@@ -77,10 +80,10 @@ func main() {
 		users : &mysql.UserModel{DB: db},
 	}
 	
-	tlsConfig :=  &tls.Config{
-		PreferServerCipherSuites: true,
-		CurvePreferences:         []tls.CurveID{tls.X25519, tls.CurveP256},
-	}
+	// tlsConfig :=  &tls.Config{
+	// 	PreferServerCipherSuites: true,
+	// 	CurvePreferences:         []tls.CurveID{tls.X25519, tls.CurveP256},
+	// }
   
 
     infoLog.Printf("Starting server on %s" , *addr)
@@ -89,13 +92,13 @@ func main() {
         Addr:         *addr,
         ErrorLog:     errLog,
         Handler:      app.routes(),
-        TLSConfig:    tlsConfig,
+        // TLSConfig:    tlsConfig,
         // Add Idle, Read and Write timeouts to the server.
         IdleTimeout:  time.Minute,
         ReadTimeout:  5 * time.Second,
         WriteTimeout: 10 * time.Second,
     }
-    err = srv.ListenAndServeTLS("./tls/cert.pem" , "./tls/key.pem")
+    err = srv.ListenAndServe()
     errLog.Fatal(err)
 }
 

@@ -1,0 +1,46 @@
+version: "3.8"
+services:
+  db:
+    image: mysql:8.0
+    container_name: snippetbox-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: snippetbox
+      MYSQL_USER: snippetuser
+      MYSQL_PASSWORD: snippetpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./db/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "snippetuser",
+          "-psnippetpass",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  app:
+    build: .
+    container_name: snippetbox-app
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+    environment:
+      DB_DSN: "snippetuser:snippetpass@tcp(db:3306)/snippetbox?parseTime=true"
+    volumes:
+      # Mount ui directory for development (remove in production)
+      - ./ui:/app/ui
+volumes:
+  dbdata:
