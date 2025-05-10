@@ -1,6 +1,6 @@
 # Snippetbox
 
-Snippetbox is a web application for managing code snippets, built using Go and based on the tutorial from *Let's Go* by Alex Edwards. The project demonstrates various web development concepts, including user authentication, form validation, secure password handling, and CSRF protection.
+Snippetbox is a web application for managing code snippets, built using Go and based on the tutorial from _Let's Go_ by Alex Edwards. The project demonstrates various web development concepts, including user authentication, form validation, secure password handling, and CSRF protection.
 
 This application allows users to sign up, log in, and manage their snippets, with a focus on secure and scalable design.
 
@@ -25,3 +25,10 @@ To run the Snippetbox project locally, follow these steps:
 ```bash
 git clone https://github.com/your-username/snippetbox.git
 cd snippetbox
+```
+
+### 2. Run using docker
+
+```bash
+docker compose up build
+```
