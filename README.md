@@ -30,5 +30,5 @@ cd snippetbox
 ### 2. Run using docker
 
 ```bash
-docker compose up build
+docker compose up --build
 ```
