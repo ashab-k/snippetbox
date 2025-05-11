@@ -23,7 +23,7 @@ To run the Snippetbox project locally, follow these steps:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/snippetbox.git
+git clone https://github.com/ashab-k/snippetbox.git
 cd snippetbox
 ```
 

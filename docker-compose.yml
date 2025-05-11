@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   db:
     image: mysql:8.0
@@ -40,7 +39,6 @@ services:
     environment:
       DB_DSN: "snippetuser:snippetpass@tcp(db:3306)/snippetbox?parseTime=true"
     volumes:
-      # Mount ui directory for development (remove in production)
       - ./ui:/app/ui
 volumes:
   dbdata:
