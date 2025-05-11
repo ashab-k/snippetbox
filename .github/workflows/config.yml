@@ -35,9 +35,14 @@ jobs:
       - name: Install dependencies
         run: go mod download
 
+      - name: Create test user
+        run: |
+          sudo apt-get update && sudo apt-get install -y mysql-client
+          mysql -h 127.0.0.1 -P 3306 -u root -prootpass -e "CREATE USER 'test_web'@'%' IDENTIFIED BY 'your_test_password'; GRANT ALL PRIVILEGES ON *.* TO 'test_web'@'%'; FLUSH PRIVILEGES;"
+
       - name: Run tests
         env:
-          DB_DSN: "snippetuser:snippetpass@tcp(db:3306)/snippetbox?parseTime=true"
+          DB_DSN: "test_web:your_test_password@tcp(db:3306)/snippetbox?parseTime=true"
         run: go test ./...
 
   docker:
