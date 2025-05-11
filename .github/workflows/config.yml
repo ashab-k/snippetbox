@@ -15,8 +15,8 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: rootpass
           MYSQL_DATABASE: snippetbox
-          MYSQL_USER: snippetuser
-          MYSQL_PASSWORD: snippetpass
+          MYSQL_USER: test_web
+          MYSQL_PASSWORD: mypass
         options: >-
           --health-cmd "mysqladmin ping -h localhost -u root -prootpass"
           --health-interval 10s
