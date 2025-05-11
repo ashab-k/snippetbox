@@ -14,7 +14,9 @@ jobs:
           - 3306:3306
         env:
           MYSQL_ROOT_PASSWORD: rootpass
-          MYSQL_DATABASE: snippetbox
+          MYSQL_DATABASE: test_snippetbox
+          MYSQL_USER: test_web
+          MYSQL_PASSWORD: pass
         options: >-
           --health-cmd "mysqladmin ping -h localhost -u root -prootpass"
           --health-interval 10s
@@ -32,14 +34,6 @@ jobs:
 
       - name: Install dependencies
         run: go mod download
-
-      - name: Set up test database user
-        run: |
-          mysql -h 127.0.0.1 -P 3306 -u root -prootpass -e "
-            CREATE USER IF NOT EXISTS 'test_web'@'%' IDENTIFIED BY 'mypass';
-            GRANT ALL PRIVILEGES ON snippetbox.* TO 'test_web'@'%';
-            FLUSH PRIVILEGES;
-          "
 
       - name: Run tests
         env:
