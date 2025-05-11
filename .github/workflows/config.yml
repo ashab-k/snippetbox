@@ -35,6 +35,17 @@ jobs:
       - name: Install dependencies
         run: go mod download
 
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..30}; do
+            if mysqladmin ping -h db -u root -prootpass --silent; then
+              echo "MySQL is up!"
+              break
+            fi
+            echo "Waiting for MySQL... ($i)"
+            sleep 2
+          done
+
       - name: Create test user
         run: |
           sudo apt-get update && sudo apt-get install -y mysql-client
